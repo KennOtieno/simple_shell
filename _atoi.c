@@ -11,8 +11,7 @@ int interactive(info_t *info)
 	return (isatty(STDIN_FILENO) && info->readfd <= 2);
 }
 
-/**
- * is_delim - check char if is delimeter
+/** * is_delim - check char if is delimeter
  * @c: check char
  * @delim: string
  * Return: none
