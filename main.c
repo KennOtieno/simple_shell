@@ -4,7 +4,7 @@
  * main - the main entry point
  * @ac: argument count
  * @av: argument vector (array)
- * Return: 0 (Success) 1 (Failure)
+ * Return: 0 (EXIT_SUCCESS) 1 (EXIT_FAILURE)
  */
 int main(int ac, char **av)
 {
@@ -27,7 +27,7 @@ int main(int ac, char **av)
 			if (errno == ENOENT)
 			{
 				_eputs(av[0]);
-				_eputs(": 0: Can't open ");
+				_eputs(": No such file or directory: ");
 				_eputs(av[1]);
 				_eputchar('\n');
 				_eputchar(BUF_FLUSH);
@@ -39,6 +39,6 @@ int main(int ac, char **av)
 	}
 	populate_env_list(info);
 	read_history(info);
-	hsh(info, av);
+	hsh(info, av); /*passing the info array and the string of CLA*/
 	return (EXIT_SUCCESS);
 }
