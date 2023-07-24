@@ -44,16 +44,16 @@ int _getline(info_t *info, char **lineptr, size_t *length)
 		return (-1);
 
 	c = _strchr(buf + i, '\n');
-	k = c ? 1 + (unsigned int)(c - buf) : len;
-	new_p = _realloc(p, s, s ? s + k : k + 1);
+	j = c ? 1 + (unsigned int)(c - buf) : len;
+	new_p = _realloc(p, s, s ? s + j : j + 1);
 	if (!new_p)
 		return (p ? free(p), -1 : -1);
 	if (s)
-		_strncat(new_p, buf + i, k - i);
+		_strncat(new_p, buf + i, j - i);
 	else
-		_strncpy(new_p, buf + i, k -1 + 1);
-	s += k - i;
-	i = k;
+		_strncpy(new_p, buf + i, j - 1 + 1);
+	s += j - i;
+	i = j;
 	p = new_p;
 
 	if (length)
