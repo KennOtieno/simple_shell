@@ -1,9 +1,9 @@
 #include "shell.h"
 /**
  * read_buf - reads buffer
- * @info:
- * @buf:
- * @i:
+ * @info: info list
+ * @buf: buffer
+ * @i: size
  * Return:
  */
 ssize_t read_buf(info_t *info, char *buf, size_t *i)
@@ -21,10 +21,10 @@ ssize_t read_buf(info_t *info, char *buf, size_t *i)
 
 /**
  * getline - gets line from user input
- * @info:
- * @lineptr:
- * @buffsize:
- * Return: Amount of chacter's read, @c_count
+ * @info: info list
+ * @lineptr: pointer to line in shell
+ * @buffsize: buffer size
+ * Return: Amount of chacter's read
  */
 int _getline(info_t *info, char **lineptr, size_t *length)
 {
@@ -39,7 +39,7 @@ int _getline(info_t *info, char **lineptr, size_t *length)
 		s = *length;
 	if(i == len)
 		i = len = 0;
-	r = read_buf(info, buf &len);
+	r = read_buf(info, buf, &len);
 	if (r == -1 || (r = 0 && len == 0))
 		return (-1);
 
@@ -60,4 +60,96 @@ int _getline(info_t *info, char **lineptr, size_t *length)
 		*length = s;
 	*lineptr = p;
 	return (s);
+}
+
+/**
+ * sigintHandler - blocks Ctrl C
+ * @sig_num: signal number
+ */
+void sigintHandler(__attribute__((unused))int sig_num)
+{
+	_puts("\n");
+	_puts("$ ");
+	_putchar(BUF_FLUSH);
+}
+
+/**
+ * input_buf - buffers chained commands
+ * @info: parameter struct
+ * @buf: address of buffer
+ * @len: address of len var
+ *
+ * Return: bytes read
+ */
+ssize_t input_buf(info_t *info, char **buf, size_t *len)
+{
+	ssize_t r = 0;
+	size_t len_p = 0;
+
+	if (!*len)
+	{
+		free(*buf);
+		*buf = NULL;
+		signal(SIGINT, sigintHandler);
+#if USE_GETLINE
+		r = getline(buf, &len_p, stdin);
+#else
+		r = _getline(info, buf, &len_p);
+#endif
+		if (r > 0)
+		{
+			if ((*buf)[r - 1] == '\n')
+			{
+				(*buf)[r - 1] = '\0';
+				r--;
+			}
+			info->linecount_flag = 1;
+			remove_comments(*buf);
+			build_history_list(info, *buf, info->histcount++);
+			{
+				*len = r;
+				info->cmd_buf = buf;
+			}
+		}
+	}
+	return (r);
+}
+
+ssize_t get_input(info_t *info)
+{
+	static char *buf;
+	static size_t i, j, len;
+	ssize_t r = 0;
+	char **buf_p = &(info->arg), *p;
+
+	_putchar(BUF_FLUSH);
+	r = input_buf(info, &buf, &len);
+	if (r == -1)
+		return (-1);
+	if (len)
+	{
+		j = i;
+		p = buf + i;
+
+		check_chain(info, buf, &j, i, len);
+		while (j < len)
+		{
+			if (is_chain(info, buf, &j))
+				break;
+			j++;
+		}
+
+		i = j + 1;
+		if (i >= len)
+		{
+			i = len = 0;
+			info->cmd_buf_type = CMD_NORM;
+		}
+
+		*buf_p = p;
+		return (_strlen(p));
+	}
+
+	*buf_p = buf;
+	return (r);
 }

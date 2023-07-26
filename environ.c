@@ -76,7 +76,6 @@ int _myunsetenv(info_t *info)
 /**
  * populate_env_list - populate environ list
  * @info: arguments
- *
  * Return: none
  */
 int populate_env_list(info_t *info)
