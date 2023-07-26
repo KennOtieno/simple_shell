@@ -1,29 +1,27 @@
 #include "shell.h"
 
 /**
- * _strlen - return string length
- * @s: string length
- *
- * Return: none
+ * _strlen - finds string length
+ * @s: string
+ * Return: string length
  */
 int _strlen(char *s)
 {
-	int a = 0;
+	int count = 0;
 
 	if (!s)
 		return (0);
 
-	while (*s++)
-		a++;
+	while (*s++) /*until NULL*/
+		count++;
 	return (a);
 }
 
 /**
  * _strcmp - strings lexicogarphic comparison
- * @s1: string one
- * @s2: string two
- *
- * Return: none
+ * @s1: first string
+ * @s2: second string
+ * Return: @s1 and @s2 comparison
  */
 int _strcmp(char *s1, char *s2)
 {
@@ -44,8 +42,7 @@ int _strcmp(char *s1, char *s2)
  * starts_with - check if the needle begin with haystack
  * @haystack: search the str
  * @needle: find substring
- *
- * Return: none
+ * Return: @haystack if found, NULL otherwise
  */
 char *starts_with(const char *haystack, const char *needle)
 {
@@ -56,10 +53,9 @@ char *starts_with(const char *haystack, const char *needle)
 }
 
 /**
- * _strcat - two strings
+ * _strcat - concats two strings together
  * @dest: buffer
  * @src: buffer source
- *
  * Return: pointer buffer
  */
 char *_strcat(char *dest, char *src)
