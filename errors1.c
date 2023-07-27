@@ -100,7 +100,7 @@ char *convert_number(long int num, int base, int flags)
 	char *ptr;
 	unsigned long n = num;
 
-	if (!(flags & CONVERT_UNSIGNED) && num < 0)
+	if (!(flags && CONVERT_UNSIGNED) && num < 0)
 	{
 		n = -num;
 		sign = '-';

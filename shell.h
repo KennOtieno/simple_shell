@@ -18,8 +18,8 @@
 #define WRITE_BUF_SIZE 1024
 
 /* convert_number() */
-#define CONVERT_UNSIGNED
-#define CONVERT_LOWERCASE
+#define CONVERT_UNSIGNED 2
+#define CONVERT_LOWERCASE 1
 
 /* command chaining */
 #define CMD_NORM     0
@@ -210,3 +210,15 @@ char *find_path(info_t *info, char *pathstr, char *cmd);
 int is_cmd(info_t *info, char *path);
 char *dup_chars(char *pathstr, int start, int stop);
 #endif
+
+/* builtin.c */
+int _myexit(info_t *info);
+int _mycd(info_t *info);
+int _myhelp(info_t *info);
+
+/* builtin1.c */
+int _myhistory(info_t *info);
+int unset_alias(info_t *info, char *str);
+int set_alias(info_t *info, char *str);
+int print_alias(list_t *node);
+int _myalias(info_t *info);
