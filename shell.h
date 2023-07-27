@@ -12,20 +12,25 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-/* read/write buffer */
 #define BUF_FLUSH -1
 #define READ_BUF_SIZE 1024
 #define WRITE_BUF_SIZE 1024
 
-/* convert_number() */
 #define CONVERT_UNSIGNED 2
 #define CONVERT_LOWERCASE 1
 
-/* command chaining */
 #define CMD_NORM     0
 #define CMD_OR       1
 #define CMD_AND      2
 #define CMD_CHAIN    3
+
+#define USE_GETLINE 0
+#define USE_STRTOK 0
+
+#define HIST_FILE	".simple_shell_history"
+#define HIST_MAX	4096
+
+extern char **environ;
 
 /**
  * struct liststr - singly linked list
@@ -41,26 +46,26 @@ typedef struct liststr
 } list_t;
 
 /**
- *struct passinfo - contains pseudo-arguements to pass into a function,
- *		allowing uniform prototype for function pointer struct
- *@arg: a string generated from getline containing arguements
- *@argv: an array of strings generated from arg
- *@path: a string path for the current command
- *@argc: the argument count
- *@line_count: the error count
- *@err_num: the error code for exit()s
- *@linecount_flag: if on count this line of input
- *@fname: the program filename
- *@env: linked list local copy of environ
- *@environ: custom modified copy of environ from LL env
- *@history: the history node
- *@alias: the alias node
- *@env_changed: on if environ was changed
- *@status: the return status of the last exec'd command
- *@cmd_buf: address of pointer to cmd_buf, on if chaining
- *@cmd_buf_type: CMD_type ||, &&, ;
- *@readfd: the fd from which to read line input
- *@histcount: the history line number count
+ * struct passinfo - contains pseudo-arguements to pass into a function,
+ * allowing uniform prototype for function pointer struct
+ * @arg: a string generated from getline containing arguements
+ * @argv: an array of strings generated from arg
+ * @path: a string path for the current command
+ * @argc: the argument count
+ * @line_count: the error count
+ * @err_num: the error code for exit()
+ * @linecount_flag: counts line of input
+ * @fname: file name of the program
+ * @env: linked list environ
+ * @environ: copy of env
+ * @history: history node
+ * @alias: alias node
+ * @env_changed: environment change varaible
+ * @status: status of last commmand
+ * @cmd_buf: pointer to cmd_buf
+ * @cmd_buf_type: Command buffer type
+ * @readfd: file descriptor to read from
+ * @history_count: history line count
  */
 typedef struct passinfo
 {
@@ -81,7 +86,7 @@ typedef struct passinfo
 	char **cmd_buf;
 	int cmd_buf_type;
 	int readfd;
-	int histcount;
+	int history_count;
 } info_t;
 
 #define INFO_INIT \
@@ -183,10 +188,11 @@ char *_memset(char *s, char b, unsigned int n);
 void ffree(char **pp);
 
 /* history.c */
-int read_history(info_t *info);
-int write_history(info_t *info);
-int build_history_list(info_t *info, char *buf, int linecount);
-
+int read_history(info_t *shell_info);
+int write_history(info_t *shell_info);
+int history_builder(info_t *shell_info, char *buffer, int lcount);
+char *get_history_file(info_t *shell_info);
+int renumber_history(info_t *shell_info);
 
 /* _atoi.c */
 int _atoi(char *s);
@@ -209,7 +215,6 @@ ssize_t get_input(info_t *info);
 char *find_path(info_t *info, char *pathstr, char *cmd);
 int is_cmd(info_t *info, char *path);
 char *dup_chars(char *pathstr, int start, int stop);
-#endif
 
 /* builtin.c */
 int _myexit(info_t *info);
@@ -222,3 +227,4 @@ int unset_alias(info_t *info, char *str);
 int set_alias(info_t *info, char *str);
 int print_alias(list_t *node);
 int _myalias(info_t *info);
+#endif

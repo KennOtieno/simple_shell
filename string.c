@@ -14,7 +14,7 @@ int _strlen(char *s)
 
 	while (*s++) /*until NULL*/
 		count++;
-	return (a);
+	return (count);
 }
 
 /**

@@ -8,7 +8,7 @@ char *get_history_file(info_t *shell_info)
 {
 	char *buffer, *directory;
 
-	directory = _getenv(shell_info, "HOME=");
+	directory = _getenv(shell_info, buffer);
 
 	if (!directory)
 		return (NULL);
@@ -83,25 +83,25 @@ int read_history(info_t *shell_info)
 	rdlen =  read(filedescriptor, buffer, f_size);
 	buffer[f_size] = 0;
 	if (rdlen <= 0)
-		return (free(buffer), 0);
+		return (free(buffer, 0));
 	close(filedescriptor);
 	for (j = 0; j < f_size; j++)
 		if (buffer[j] == '\n')
 		{
 			buffer[j] = 0;
-			history_builder(shell_info, buffer + last, lcount++);
+			build_history_list(shell_info, buffer + last, lcount++);
 			last = j + 1;
 		}
 	if (last != j)
 	{
-		history_builder(shell_info, buffer + last, lcount++);
-		last = j + 1;
+		build_history_list(shell_info, buffer + last, lcount++);
+		last = i + 1;
 	}
 	free(buffer);
 	shell_info->history_count = lcount;
 	while (shell_info->history_count-- >= HIST_MAX)
 		delete_node_at_index(&(shell_info->history), 0);
-	renumber_history(shell_info);
+	renumber_histroy(shell_info);
 	return (shell_info->history_count);
 }
 

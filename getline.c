@@ -9,7 +9,7 @@
 ssize_t read_buf(info_t *info, char *buf, size_t *i)
 {
 
-	size_t r = 0;
+	ssize_t r = 0;
 
 	if(*i)
 		return (0);
@@ -105,7 +105,7 @@ ssize_t input_buf(info_t *info, char **buf, size_t *len)
 			}
 			info->linecount_flag = 1;
 			remove_comments(*buf);
-			build_history_list(info, *buf, info->histcount++);
+			history_builder(info, *buf, info->history_count++);
 			{
 				*len = r;
 				info->cmd_buf = buf;
